@@ -1,0 +1,1 @@
+python bootstrap_instructions.py --batch_dir ../data/ceshi --num_instructions_to_generate 10 --seed_tasks_path ../data/seed_tasks.jsonl --engine "davinci" --api_key "sk-y4HtX3nsqpdQtUfZ5g06U9Kz0I8mcVJTwkWpdO566E0VrOLv"

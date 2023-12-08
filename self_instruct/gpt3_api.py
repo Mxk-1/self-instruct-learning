@@ -20,6 +20,8 @@ def make_requests(
         openai.organization = organization
     retry_cnt = 0
     backoff_time = 30
+    # 设置代理
+    openai.proxy = "http://127.0.0.1:33210"
     while retry_cnt <= retries:
         try:
             response = openai.Completion.create(

@@ -12,7 +12,6 @@ from functools import partial
 from rouge_score import rouge_scorer
 from gpt3_api import make_requests as make_gpt3_requests
 
-
 random.seed(42)
 
 
