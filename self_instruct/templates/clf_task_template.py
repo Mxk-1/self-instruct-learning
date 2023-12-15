@@ -1,96 +1,108 @@
-template_1 = '''Can the following task be regarded as a classification task with finite output labels?
+template_1 = '''以下任务是否可以被视为具有有限输出标签的分类任务？
 
-Task: Given my personality and the job, tell me if I would be suitable.
+Task: 考虑到我的个性和工作，告诉我是否适合。
 Is it classification? Yes
 
-Task: Give me an example of a time when you had to use your sense of humor.
+Task: 给我举一个你不得不运用幽默感的例子。
 Is it classification? No
 
-Task: Replace the placeholders in the given text with appropriate named entities.
+Task: 将给定文本中的占位符替换为适当的命名实体。
 Is it classification? No
 
-Task: Fact checking - tell me if the statement is true, false, or unknown, based on your knowledge and common sense.
+Task: 事实核查——根据你的知识和常识，告诉我这个说法是真的、假的还是未知的。
 Is it classification? Yes
 
-Task: Return the SSN number for the person.
+Task: 返回该人员的SSN编号。
 Is it classification? No
 
-Task: Detect if the Reddit thread contains hate speech.
+Task: 检测Reddit帖子是否包含仇恨言论。
 Is it classification? Yes
 
-Task: Analyze the sentences below to identify biases.
+Task: 分析下面的句子，找出偏见。
 Is it classification? No
 
-Task: Select the longest sentence in terms of the number of words in the paragraph, output the sentence index.
+Task: 根据段落中的字数选择最长的句子，输出句子索引。
 Is it classification? Yes
 
-Task: Find out the toxic word or phrase in the sentence.
+Task: 找出句子中有毒的单词或短语。
 Is it classification? No
 
-Task: Rank these countries by their population.
+Task: 按人口对这些国家进行排名。
 Is it classification? No
 
-Task: You are provided with a news article, and you need to identify all the categories that this article belongs to. Possible categories include: Music, Sports, Politics, Tech, Finance, Basketball, Soccer, Tennis, Entertainment, Digital Game, World News. Output its categories one by one, seperated by comma.
+Task: 你会收到一篇新闻文章，你需要确定这篇文章所属的所有类别。可能的类别包括：音乐、体育、政治、科技、金融、篮球、足球、网球、娱乐、数字游戏、世界新闻。逐个输出其类别，用逗号分隔。
 Is it classification? Yes
 
-Task: Given the name of an exercise, explain how to do it.
+Task: 给定练习的名称，解释如何进行。
 Is it classification? No
 
-Task: Select the oldest person from the list.
+Task: 从列表中选择年龄最大的人。
 Is it classification? Yes
 
-Task: Find the four smallest perfect numbers.
+Task: 找出四个最小的完美数字。
 Is it classification? No
 
-Task: Does the information in the document supports the claim? You can answer "Support" or "Unsupport".
+Task: 文件中的信息是否支持索赔？您可以回答“支持”或“不支持”。
 Is it classification? Yes
 
-Task: Create a detailed budget for the given hypothetical trip.
+Task: 为给定的假设旅行创建详细的预算。
 Is it classification? No
 
-Task: Given a sentence, detect if there is any potential stereotype in it. If so, you should explain the stereotype. Else, output no.
+Task: 给定一个句子，检测其中是否有任何潜在的刻板印象。如果有，你应该解释刻板印象。否则，输出编号。
 Is it classification? No
 
-Task: Explain the following idiom to me, and try to give me some examples.
+Task: 给我解释一下下面的成语，并试着给我举几个例子。
 Is it classification? No
 
-Task: Is there anything I can eat for a breakfast that doesn't include eggs, yet includes protein, and has roughly 700-1000 calories?
+Task: 我早餐能吃什么不包括鸡蛋，但包括蛋白质，大约有700-1000卡路里的东西吗？
 Is it classification? No
 
-Task: Answer the following multiple choice question. Select A, B, C, or D for the final answer.
+Task: 回答以下多项选择题。选择A、B、C或D作为最终答案。
 Is it classification? Yes
 
-Task: Decide whether the syllogism is logically sound.
+Task: 判断三段论在逻辑上是否合理。
 Is it classification? Yes
 
-Task: How can individuals and organizations reduce unconscious bias?
+Task: 个人和组织如何减少无意识的偏见？
 Is it classification? No
 
-Task: What are some things you can do to de-stress?
+Task: 你能做些什么来减压？
 Is it classification? No
 
-Task: Find out the largest one from a set of numbers. Output the number directly.
+Task: 从一组数字中找出最大的一个。直接输出数字。
 Is it classification? Yes
 
-Task: Replace the <mask> token in the text with proper words that are consistent with the context. You can use multiple words for each <mask> token.
+Task: 用与上下文一致的正确单词替换文本中的<mask>标记。您可以为每个＜mask＞标记使用多个单词。
 Is it classification? No
 
-Task: Write a cover letter based on the given facts.
+Task: 根据给定的事实写一封求职信。
 Is it classification? No
 
-Task: Identify the pos tag of the word in the given sentence.
+Task: 识别给定句子中单词的词性标签。
 Is it classification? Yes
 
-Task: Write a program to compute the sum of integers from k to n.
+Task: 写一个程序来计算从k到n的整数之和。
 Is it classification? No
 
-Task: In this task, you need to compare the meaning of the two sentences and tell if they are the same. Output yes or no.
+Task: 在这项任务中，你需要比较这两个句子的意思，并判断它们是否相同。输出是或否。
 Is it classification? Yes
 
-Task: To make the pairs have the same analogy, write the fourth word.
+Task: 为了使这两对有相同的类比，写第四个单词。
 Is it classification? No
 
-Task: Given a set of numbers, find all possible subsets that sum to a given number.
+Task: 给定一组数字，找出所有可能的子集，这些子集的总和为给定的数字。
 Is it classification? No
+
+Task: 你能给我解释一下这个词吗？
+Is it classification? No
+
+Task: 行政复议的基本原则包括（　）。
+Is it classification? No
+
+Task: 根据《行政诉讼法》相关规定，行政诉讼的特征是（　）。
+Is it classification? No
+
+Task: 关于教育费附加减免规定，下列说法正确的有（　）。
+Is it classification? Yes
 
 Task:'''

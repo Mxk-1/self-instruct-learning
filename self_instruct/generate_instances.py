@@ -6,9 +6,10 @@ import re
 import argparse
 import pandas as pd
 from collections import OrderedDict
+
+from getApiKey import openkey_gpt_request
 from gpt3_api import make_requests as make_gpt3_requests
 from templates.instance_gen_template import output_first_template_for_clf, input_first_template_for_gen
-
 
 random.seed(42)
 
@@ -18,9 +19,11 @@ def parse_args():
     parser.add_argument(
         "--batch_dir",
         type=str,
-        required=True,
-        help="The directory where the batch is stored.",
+        required=False,
+        default="D:\\NLP\\self-instruct-learning\\data\\tax_data",
+        help="The directory where the batch is stored."
     )
+    # 这里需要上一步生成的文件
     parser.add_argument(
         "--input_file",
         type=str,
@@ -39,7 +42,8 @@ def parse_args():
     parser.add_argument(
         "--max_instances_to_generate",
         type=int,
-        default=5,
+        default=2,
+        # 每个指令生成的实例数量
         help="The max number of instances to generate for each instruction.",
     )
     parser.add_argument(
@@ -55,7 +59,7 @@ def parse_args():
     parser.add_argument(
         "--engine",
         type=str,
-        default="davinci",
+        default="gpt-3.5-turbo-1106",
         help="The engine to use."
     )
     parser.add_argument(
@@ -67,12 +71,19 @@ def parse_args():
     parser.add_argument(
         "--api_key",
         type=str,
+        default="sk-y4HtX3nsqpdQtUfZ5g06U9Kz0I8mcVJTwkWpdO566E0VrOLv",
         help="The API key to use. If not specified, the key will be read from the environment variable OPENAI_API_KEY."
     )
     parser.add_argument(
         "--organization",
         type=str,
         help="The organization to use. If not specified, the default organization id will be used."
+    )
+    parser.add_argument(
+        "--template",
+        type=str,
+        default="template_1",
+        help="Which template to use. Currently only `template_1` is supported.",
     )
     return parser.parse_args()
 
@@ -93,14 +104,14 @@ if __name__ == '__main__':
             tasks.append(data)
 
     task_clf_types = {}
-    with open(os.path.join(args.batch_dir, "is_clf_or_not_davinci_template_1.jsonl")) as fin:
+    with open(os.path.join(args.batch_dir, f"is_clf_or_not_{args.engine}_{args.template}.jsonl")) as fin:
         for line in fin:
             data = json.loads(line)
             task_clf_types[data["instruction"]] = data["is_classification"].strip() in ["Yes", "yes", "YES"]
 
     if args.classification_tasks_only:
         tasks = [task for task in tasks if task_clf_types[task["instruction"]]]
-    
+
     if args.generation_tasks_only:
         tasks = [task for task in tasks if not task_clf_types[task["instruction"]]]
 
@@ -117,7 +128,7 @@ if __name__ == '__main__':
         print(f"Loaded {len(existing_requests)} existing requests")
 
     progress_bar = tqdm.tqdm(total=len(tasks))
-    with open(output_path, "w") as fout:
+    with open(output_path, "w", encoding="utf-8") as fout:
         for batch_idx in range(0, len(tasks), args.request_batch_size):
             batch = tasks[batch_idx: batch_idx + args.request_batch_size]
             if all(d["instruction"] in existing_requests for d in batch):
@@ -125,9 +136,9 @@ if __name__ == '__main__':
                     data = existing_requests[d["instruction"]]
                     data = OrderedDict(
                         (k, data[k]) for k in \
-                            ["instruction", "raw_instances", "instance_metadata", "instruction_metadata", 
-                            "most_similar", "avg_similarity_score"]
-                        )
+                        ["instruction", "raw_instances", "instance_metadata", "instruction_metadata",
+                         "most_similar", "avg_similarity_score"]
+                    )
                     fout.write(json.dumps(data, ensure_ascii=False) + "\n")
             else:
                 prompts = []
@@ -138,32 +149,37 @@ if __name__ == '__main__':
                     else:
                         prompt = input_first_template_for_gen + " " + task["instruction"].strip() + "\n"
                         prompts.append(prompt)
-                results = make_gpt3_requests(
-                    engine=args.engine,
-                    prompts=prompts,
-                    # because the clf template is longer, we need to decrease the max_tokens
-                    max_tokens=300 if any(task_clf_types[task["instruction"]] for task in batch) else 350,
-                    temperature=0,
-                    top_p=0,
-                    frequency_penalty=0,
-                    presence_penalty=1.5,
-                    stop_sequences=[f"Example {args.max_instances_to_generate + 1}", "Task:"],
-                    logprobs=1,
-                    n=1,
-                    best_of=1,
-                    api_key=args.api_key,
-                    organization=args.organization)
+
+                results = []
+                for i in range(len(prompts)):
+                    result = openkey_gpt_request().request_gpt(prompts[i])
+                    results.append(result)
+                # results = make_gpt3_requests(
+                #     engine=args.engine,
+                #     prompts=prompts,
+                #     # because the clf template is longer, we need to decrease the max_tokens
+                #     max_tokens=300 if any(task_clf_types[task["instruction"]] for task in batch) else 350,
+                #     temperature=0,
+                #     top_p=0,
+                #     frequency_penalty=0,
+                #     presence_penalty=1.5,
+                #     stop_sequences=[f"Example {args.max_instances_to_generate + 1}", "Task:"],
+                #     logprobs=1,
+                #     n=1,
+                #     best_of=1,
+                #     api_key=args.api_key,
+                #     organization=args.organization)
                 for i in range(len(batch)):
                     data = batch[i]
                     data["instance_metadata"] = results[i]
-                    if results[i]["response"] is not None:
-                        data["raw_instances"] = results[i]["response"]["choices"][0]["text"]
+                    if results[i] is not None:
+                        data["raw_instances"] = results[i]
                     else:
                         data["raw_instances"] = ""
                     data = OrderedDict(
                         (k, data[k]) for k in \
-                            ["instruction", "raw_instances", "instance_metadata", "instruction_metadata", 
-                            "most_similar", "avg_similarity_score"]
-                        )
+                        ["instruction", "raw_instances", "instance_metadata", "instruction_metadata",
+                         "most_similar", "avg_similarity_score"]
+                    )
                     fout.write(json.dumps(data, ensure_ascii=False) + "\n")
             progress_bar.update(len(batch))

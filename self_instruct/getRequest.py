@@ -1,15 +1,21 @@
+from datetime import datetime
+
 import openai
 import time
 import codecs
 import json
+
+
+# 自己
 class openkey_gpt_request:
-    def __init__(self, apikey ="sk-y4HtX3nsqpdQtUfZ5g06U9Kz0I8mcVJTwkWpdO566E0VrOLv",retry_time=5, model_name="gpt-3.5-turbo-1106") -> None:
+    def __init__(self, apikey="sk-y4HtX3nsqpdQtUfZ5g06U9Kz0I8mcVJTwkWpdO566E0VrOLv", retry_time=5,
+                 model_name="gpt-3.5-turbo-1106") -> None:
         self.retry_time = retry_time
-        #self.url = "https://op.zakix.info/v1"
+        # self.url = "https://op.zakix.info/v1"
         self.url = "https://giegie.green/v1"
         self.apikey = apikey
         self.model_name = model_name
-        self.requstion_timeout=60
+        self.requstion_timeout = 60
         pass
 
     def get_result(self, content):
@@ -26,10 +32,10 @@ class openkey_gpt_request:
         try:
             # set proxy
             openai.proxy = "http://127.0.0.1:33210"
-            openai.api_key= self.apikey
-            openai.api_base =self.url
-            messages = [{"role":"user","content": content}]
-            response=openai.ChatCompletion.create(
+            openai.api_key = self.apikey
+            openai.api_base = self.url
+            messages = [{"role": "user", "content": content}]
+            response = openai.ChatCompletion.create(
                 model=self.model_name,
                 messages=messages,
                 temperature=0.01,
@@ -39,22 +45,31 @@ class openkey_gpt_request:
             if "choices" in result:
                 res = result["choices"][0]["message"]["content"].strip()
                 return res
+            if isinstance(content, list):
+                results = []
+                for j, prompt in enumerate(content):
+                    data = {
+                        "prompt": prompt,
+                        "response": {"choices": response["choices"][j * 1: (j + 1) * 1]} if response else None,
+                        "created_at": str(datetime.now()),
+                    }
+                    results.append(data)
+                return results
         except Exception as ex:
             print(ex)
 
         return None
-    
-    
+
+
 if __name__ == "__main__":
     api_info = openkey_gpt_request()
-    #question = "现在需要编写linux脚本，实现调用多个shell脚本，用数字控制脚本调用顺序，比如给定数字总轮数10, 开始遍历。轮数为1时， 调用A脚本并传入参数S1，之后再调用A2脚本并传入参数S2；轮数为2时， 调用B脚本并传入参数T1，之后再调用B2脚本并传入参数T2;轮数大于2后都调用C脚本并传入参数P1，计算出剩余轮数，也就是总轮数减去2，执行后跳出循环。请帮忙写出脚本代码。"
-    #question = "现在需要编写linux脚本，脚本执行时会传入3个参数，在脚本中需要写清楚怎样获取传入参数并使用。需要给出执行脚本的命令。"
+    # question = "现在需要编写linux脚本，实现调用多个shell脚本，用数字控制脚本调用顺序，比如给定数字总轮数10, 开始遍历。轮数为1时， 调用A脚本并传入参数S1，之后再调用A2脚本并传入参数S2；轮数为2时， 调用B脚本并传入参数T1，之后再调用B2脚本并传入参数T2;轮数大于2后都调用C脚本并传入参数P1，计算出剩余轮数，也就是总轮数减去2，执行后跳出循环。请帮忙写出脚本代码。"
+    # question = "现在需要编写linux脚本，脚本执行时会传入3个参数，在脚本中需要写清楚怎样获取传入参数并使用。需要给出执行脚本的命令。"
     # question = "现在需要编写linux脚本，脚本执行时会传入1个参数，在脚本中需要写清楚怎样获取传入参数并使用，如果参数值为local则走A流程，否则则走B流程。需要给出执行脚本的命令。"
-    question = "NLP要掌握的技能有哪些？"
+    question = "你好"
     rlt = api_info.request_gpt(question)
     print("--result--")
     print(rlt)
-    
 
 # $ python getRequest.py 
 # --result--

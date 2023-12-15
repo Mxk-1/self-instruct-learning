@@ -7,7 +7,6 @@ import random
 import tqdm
 import pandas as pd
 
-
 random.seed(123)
 
 
@@ -16,18 +15,18 @@ def parse_args():
     parser.add_argument(
         "--instance_files",
         nargs="+",
-        default=["data/batch_221203/machine_generated_instances.jsonl"],
+        default=["D:\\NLP\\self-instruct-learning\\data\\mygpt3\\machine_generated_instances.jsonl"],
         type=str,
         help="The input files that contain the machine generated instances."
     )
     parser.add_argument(
         "--classification_type_files",
         nargs="+",
-        default=["data/batch_221203/is_clf_or_not_davinci_template_1.jsonl"],
+        default=["D:\\NLP\\self-instruct-learning\\data\\mygpt3\\is_clf_or_not_gpt-3.5-turbo-1106_template_1.jsonl"],
     )
     parser.add_argument(
         "--output_dir",
-        default="data/gpt3_generations/batch_221203/finetuning/",
+        default="D:\\NLP\\self-instruct-learning\\data\\mygpt3\\batch_231214\\finetuning",
         type=str,
         help="The output dir to save the cleaned version of the generated instances, so that it can be used for GPT3 finetuning."
     )
@@ -44,8 +43,8 @@ def parse_args():
     parser.add_argument(
         "--seed_tasks_path",
         type=str,
-        required=True,
-        default="data/seed_tasks.jsonl",
+        required=False,
+        default="data/my_seed_tasks.jsonl.jsonl",
         help="The path to the seed data.",
     )
     return parser.parse_args()
@@ -124,6 +123,7 @@ def filter_duplicate_instances(instances):
     instances = list(set(instances))
     return instances
 
+
 def filter_invalid_instances(instances):
     filtered_instances = []
     for instance in instances:
@@ -138,6 +138,7 @@ def filter_invalid_instances(instances):
             continue
         filtered_instances.append(instance)
     return filtered_instances
+
 
 def parse_instances_for_generation_task(raw_text, instruction, response_metadata):
     instances = []
@@ -155,12 +156,13 @@ def parse_instances_for_generation_task(raw_text, instruction, response_metadata
     else:
         return []
     # if the generation stops because of length, we remove the last instance
-    if response_metadata["response"]["choices"][0]["finish_reason"] == "length":
-        instances = instances[:-1]
-    
+    # if response_metadata["response"]["choices"][0]["finish_reason"] == "length":
+    #     instances = instances[:-1]
+
     instances = filter_invalid_instances(instances)
     instances = filter_duplicate_instances(instances)
     return instances
+
 
 def parse_instances_for_classification_task(raw_text, instruction, response_metadata):
     instances = []
@@ -195,10 +197,10 @@ if __name__ == "__main__":
     args = parse_args()
 
     training_instances = []
-    
+
     generated_tasks = []
     for instance_file in args.instance_files:
-        with open(instance_file) as fin:
+        with open(instance_file, encoding="utf-8") as fin:
             for line in fin:
                 generated_tasks.append(json.loads(line))
     print(f"Loaded {len(generated_tasks)} raw generated tasks")
@@ -217,21 +219,22 @@ if __name__ == "__main__":
 
         # get the instances
         if task["is_classification"]:
-            task_instances = parse_instances_for_classification_task(task["raw_instances"], instruction, task["instance_metadata"])
+            task_instances = parse_instances_for_classification_task(task["raw_instances"], instruction,
+                                                                     task["instance_metadata"])
         else:
-            task_instances = parse_instances_for_generation_task(task["raw_instances"], instruction, task["instance_metadata"])
+            task_instances = parse_instances_for_generation_task(task["raw_instances"], instruction,
+                                                                 task["instance_metadata"])
 
         # we only allow max 5 instances per task
         task_instances = random.sample(task_instances, min(len(task_instances), 5))
-        
+
         if not task_instances:
             continue
 
         training_instances += task_instances
 
-
     os.makedirs(args.output_dir, exist_ok=True)
-    with open(os.path.join(args.output_dir, "all_generated_instances.jsonl"), "w") as fout:
+    with open(os.path.join(args.output_dir, "all_generated_instances.jsonl"), "a+") as fout:
         for instance in training_instances:
             fout.write(json.dumps({
                 "instruction": instance[0],
@@ -251,7 +254,8 @@ if __name__ == "__main__":
         sampled_instructions = random.sample(unique_instructions, args.num_instructions)
         training_instances = [it for it in training_instances if it[0] in sampled_instructions]
         print(f"Only using {len(training_instances)} instances for these sampled instructions.")
-        with open(os.path.join(args.output_dir, f"sampled_generated_instances_{args.num_instructions}.jsonl"), "w") as fout:
+        with open(os.path.join(args.output_dir, f"sampled_generated_instances_{args.num_instructions}.jsonl"),
+                  "w") as fout:
             for instance in training_instances:
                 fout.write(json.dumps({
                     "instruction": instance[0],
@@ -281,11 +285,13 @@ if __name__ == "__main__":
                 inst_input = inst_input.strip()
             # we also replace two consecutive new lines with one new line half of the time
             inst_input = inst_input.replace("\n\n", "\n")
-        
+
         gpt3_instances.append(encode_instance(instance[0], inst_input, instance[2]))
 
     # remove duplicates
+    # 存储过滤后的数据
     filtered_instances = []
+    # 存储已经出现过的prompt和completion
     prompt_completion_set = set()
     for instance in gpt3_instances:
         instance_pair = (instance["prompt"], instance["completion"])
@@ -302,3 +308,4 @@ if __name__ == "__main__":
                 "prompt": instance["prompt"],
                 "completion": instance["completion"],
             }) + "\n")
+
