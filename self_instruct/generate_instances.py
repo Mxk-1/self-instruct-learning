@@ -59,7 +59,7 @@ def parse_args():
     parser.add_argument(
         "--engine",
         type=str,
-        default="gpt-3.5-turbo-1106",
+        default="Yi34B",
         help="The engine to use."
     )
     parser.add_argument(
@@ -91,7 +91,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    with open(os.path.join(args.batch_dir, args.input_file)) as fin:
+    with open(os.path.join(args.batch_dir, args.input_file), encoding="gbk") as fin:
         lines = fin.readlines()
         if args.num_instructions is not None:
             lines = lines[:args.num_instructions]

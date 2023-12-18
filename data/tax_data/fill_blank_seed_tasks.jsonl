@@ -1,0 +1,8 @@
+{"id": "seed_task_0", "name": "行政复议", "instruction": "行政复议的基本原则包括（　）。", "instances": [{"input": "", "output": "便民原则"}], "is_classification": false}
+{"id": "seed_task_1", "name": "行政诉讼", "instruction": "根据《行政诉讼法》相关规定，行政诉讼的特征是（　）。", "instances": [{"input": "", "output": "审理裁判对象是被诉行政行为"}], "is_classification": false}
+{"id": "seed_task_2", "name": "车辆购置税", "instruction": "根据车辆购置税规定，下列说法正确的有（　）。", "instances": [{"input": "", "output": "将已纳车辆购置税的车辆退回车辆生产企业，可以申请退税"}], "is_classification": false}
+{"id": "seed_task_3", "name": "受益所有人", "instruction": "从中国取得股息所得的下列申请人，可直接判定为“受益所有人”的有（　　）。", "instances": [{"input": "", "output": "缔约对方居民且在缔约对方上市的公司"}], "is_classification": false}
+{"id": "seed_task_4", "name": "增值税计税销售额", "instruction": "金融机构提供贷款服务，增值税计税销售额是（　　）。", "instances": [{"input": "", "output": "取得的全部利息及利息性质的收入"}], "is_classification": false}
+{"id": "seed_task_5", "name": "免征契税", "instruction": "下列不动产权属承受行为中，免征契税的有（　）。", "instances": [{"input": "", "output": "公租房经营单位购买住房用于公租房"}], "is_classification": false}
+{"id": "seed_task_6", "name": "不征税项目", "instruction": "下列情形应使用“未发生销售行为的不征税项目”编码开具发票的有（　）。", "instances": [{"input": "", "output": "代理进口免税货物向委托方收取并代为支付的货款"}], "is_classification": false}
+{"id": "seed_task_7", "name": "教育费附加", "instruction": "关于教育费附加减免规定，下列说法正确的有（　）。", "instances": [{"input": "", "output": "由于减免增值税发生退税，退还附征的教育费附加"}], "is_classification": false}
